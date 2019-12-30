@@ -1,7 +1,6 @@
 # HUFS-C-Study
 죽음의 C언어 스터디
 
----
 
 ## 스터디 할것 + 일정 
 매주 수/금 15:30, 2020-1학기 개강 전까지  
@@ -25,7 +24,7 @@ C언어의 기초+심화 내용과 알고리즘을(가능한) 공부합니다
 참고하시면 좋습니당  
 [지옥에서 온 깃 - 생활코딩](https://www.youtube.com/watch?v=hFJZwOfme6w&list=PLuHgQVnccGMA8iwZwrGyNXCGy2LAAsTXk)  
 [git push rejected 오류](https://devx.tistory.com/entry/git-push-%EC%8B%9C-%EC%98%A4%EB%A5%98%EB%A9%94%EC%84%B8%EC%A7%80-%EB%B0%9C%EC%83%9D%EC%9B%90%EC%9D%B8)  
-[git 기본적인 사용법](https://devx.tistory.com/entry/git-push-%EC%8B%9C-%EC%98%A4%EB%A5%98%EB%A9%94%EC%84%B8%EC%A7%80-%EB%B0%9C%EC%83%9D%EC%9B%90%EC%9D%B8)
+[git 기본적인 사용법](https://devx.tistory.com/entry/git-push-%EC%8B%9C-%EC%98%A4%EB%A5%98%EB%A9%94%EC%84%B8%EC%A7%80-%EB%B0%9C%EC%83%9D%EC%9B%90%EC%9D%B8)  
 [누구나 쉽게 이해할 수 있는 git](https://backlog.com/git-tutorial/kr/)
 
 
