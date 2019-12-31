@@ -1,0 +1,38 @@
+깃 사용법
+
+1. cd .. 
+상위 디렉토리로 이동
+
+2. cd ~/git 
+깃디렉토리로 이동 
+
+3. mkdir 
+하위 디렉토리 생성
+
+4. git init 
+깃 초기화
+
+5. git add 
+수정한 파일 스테이지에 추가
+
+6. git commit -m "message1" 
+스테이지에 올라온 파일 커밋하기 
+
+7. git commit -am "message2" 
+한번 커밋한 파일은 스테이지에 올리고 커밋을 한꺼번에 처리가능 
+
+8. git log
+커밋 기록 자세히 살펴보기
+
+9. git diff
+변경사항 확인하기 
+
+10. git pull origin master
+원격저장소에서 파일 내려받기
+
+** 올릴 때 순서
+git pull origin master
+git add .
+git commit -m "message"
+git push origin master
+
