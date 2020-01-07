@@ -1,0 +1,206 @@
+﻿0101 자료형, 수식, 조건문 스터디
+
+cp04.변수와 자료형
+
+**자료형의 크기 
+
+#include <stdio.h>
+int main()
+{
+	char x='A';
+	printf("변수 x의 크기: %d \n", sizeof(x));
+	printf("char형의 크기: %d \n", sizeof(char));
+	printf("int형의 크기: %d \n", sizeof(int));
+	printf("long형의 크기: %d \n", sizeof(long));
+	printf("float형의 크기: %d \n", sizeof(float));
+	printf("double형의 크기: %d \n", sizeof(double));
+}
+
+**부동소수점형
+
+부동소수점형은 오차가 있어서 같은 값이더라도 다른 값으로 인지할 수 있으니 주의!
+따라서 부동소수점을 비교할 때에는 오차범위를 설정한 뒤 이 범위 값을 넘는지 안 넘는지 확인하는 방식으로 코드를 짜야함
+
+
+**문자변수
+
+#include <stdio.h>
+
+int main()
+{
+	char code1 = 'A';  //문자 상수로 초기화 
+	char code2 = 65;  // 아스키 코드로 초기화 
+	printf("code1 = %c \n", code1);
+	printf("code2 = %c \n", code2);
+
+	return 0;
+}
+
+--> 모두 같은 A로 출력
+
+#include <stdio.h>
+
+int main()
+{
+	char code1 = 'A';
+	char code2 = 65;
+	printf("code1 = %c \n", code1);
+	printf("code2 = %d \n", code2);
+	printf("%d", sizeof(code2));
+	return 0;
+}
+
+--> 포맷팅을 다르게 했을 경우 출력값이 A, 64로 다르다.
+
+*정수형으로서의 char형 
+char는 문자만 저장하는 것이 아님.
+8 비트의 정수를 저장하는데 char 형을 사용할 수 있음.
+printf("%d", 'A'+1);
+-->66
+
+cp05. 수식과 연산자
+
+*증감연산자
+
+1. 전위 증가 연산자: ++x
+x가 1증가 --> 수식의 값은 증가된 x값
+
+2. 후위 증가 연산자: x++
+수식의 값은 현재 x값 -->x가 1증가
+
+
+#include <stdio.h>
+
+int main()
+{
+	int x = 10;
+	int y = 10;
+	
+	printf("x = %d\n", x);
+	printf("++x = %d\n", ++x);
+	printf("x = %d \n\n", x);
+	printf("y = %d\n", y);
+	printf("y++ = %d\n", y++);
+	printf("y = %d \n\n",y);
+
+	return 0;
+
+}
+x = 10
+++x = 11
+x = 11
+
+y = 10
+y++ = 10
+y = 11
+
+**조건 연산자 ?
+(조건식) ? 수식A : 수식B
+예시: 큰 값 찾기
+max = (x > y) ? x : y;
+
+
+**c언어는 bool형을 공식적으로 지원하지 않음
+#define TRUE 1 
+#define FALSE 0 
+사용해서 판단한다.
+
+**수식에서의 자동적인 형 변환
+서로 다른 자료형이 혼합하여 사용되는 경우 더 큰 자료형으로 통일된다.
+자료형의 크기 순서 : char < short < int < long < float < double
+
+#include <stdio.h>
+
+int main()
+{
+	char a='A';
+	char b;
+	int c=1;
+	b = a + c;
+	printf("%c", b);
+
+}
+--> B
+#include <stdio.h>
+
+int main()
+{
+	char a='A';
+	char b;
+	int c=1;
+	b = a + c;
+	printf("%d", b);
+
+}
+-->66
+
+cp06. 조건문
+
+**if, else if, else 문으로 월별 날짜수 구하기
+#include <stdio.h>
+
+int main()
+{
+	int month, days;
+	printf("Which month(1-12)? ");
+	scanf("%d", &month);
+	if (month == 2)
+		days = 28;
+	else if ((month == 1) || (month == 3) || (month == 5) || (month == 7) || (month == 8) || (month == 10) || (month == 12))
+		days = 31;
+	else
+		days = 30;
+	printf("%d-month has %d days \n ", month, days);
+	
+	return 0;
+
+}
+
+**실습: 문자 분류
+
+#include <stdio.h>
+
+int main()
+{
+	char ch;
+	printf("Enter a character: ");
+	scanf("%c", &ch);
+	
+	if ('A' <= ch && ch <= 'Z')
+		printf("\'%c\' is uppercase \n", ch);
+	else if ('a' <= ch && ch <= 'z')
+		printf("\'%c\' is lowercase \n", ch);
+	else if ('0' <= ch && ch <= '9')
+		printf("\'%c\' is digit \n", ch);
+	else
+		printf("\'%c\' is special character \n ", ch);
+
+}
+
+**switch 문: 제어식의 값에 따라서 여러 경로 중 하나를 선택하는 제어 구조
+
+#include <stdio.h>
+
+int main()
+{
+	int number;
+	printf("Enter an integer: ");
+	scanf("%d", &number);
+	
+	switch (number) {
+	case 0:
+		printf("zero \n");
+	case 1:
+		printf("one \n");
+		break;
+	case 2:
+		printf("two \n");
+		break;
+	default:  // 일치하는 경우가 없으면,
+		printf("many \n");
+		break;
+	}
+}
+
+
+
