@@ -1,0 +1,84 @@
+﻿#include <stdio.h>
+int main() {
+	int i = 1;
+	while (i < 10){
+		printf("반복중입니다 n");
+		i++;
+	}
+}
+
+두문장이상일 때는 조건문 처럼 중괄호가 필요함
+
+#예제: 1~n 합 구하기
+#include <stdio.h>
+
+int main(void)
+{
+	int i, n, sum;
+	printf("Enter number: ");
+	scanf("%d", &n);
+	i = 1;
+	sum = 0;
+	while (i <= n){	
+		sum += i;
+		i++;
+	}
+	printf("Sum of 1 to %d is %d\n", n, sum);
+	return 0;
+
+}
+
+//원금의 두배가 되기까지 도달하는 시간
+
+#include <stdio.h>
+#define SEED_MONEY 100000000
+
+int main(void){
+	int year = 0;
+	int money = SEED_MONEY;
+	float rate = 0.0;
+	printf("Annual interest rate?: ");
+	scanf("%f", &rate);
+	while (money < SEED_MONEY * 2){
+		money += money * rate;
+		year ++;
+	
+	}
+	printf("%d year", year);
+	return 0;
+}
+
+
+#include <stdio.h>
+#define SEED_MONEY 100000000
+
+int get_factorial(int n){
+	for (int i= n-1; i > 0; i--){
+		n = n * i;
+	}
+	return n;
+}
+int main(void){
+	int n;
+	printf("Enter number: ");
+	scanf("%d", &n);
+	printf("%d! is %d\n", n, get_factorial(n));
+	return 0;
+}
+
+
+#math.h-제곱근
+파이썬과 달리 제급근 연산자가 없어서
+math.h를 통해서 double pow(double x, double y)
+
+-전역변수와 전역변수
+전역변수는 함수밖에서 선언한다
+#전역변수는 자동으로 0으로 초기화
+#지역변수는 안됨
+
+-지역상수 전역상수
+지역상수: constant
+전역상수: define
+
+지역변수를 전역변수처럼 쓰고 싶으면: static
+외부의 다른 파일에 선언된 전역변수를 연결하는 지정자: extern
