@@ -1,0 +1,169 @@
+1. Stack, Queue, Dequeue
+1) Stack
+- LIFO: Last In, First Out
+- 지원 연산: push, pop, top, isEmpty, size
+
+2) Queue
+- FIFO: First In, First Out (= 선착순)
+- 지원 연산: enqueue, dequeue, isEmpty, front, len
+
+3) Dequeue
+- Stack + Queue: 아무 쪽으로 들어갔다 나왔다 가능
+- 지원 연산: append, appendLeft, pop, popLeft
+
+2. 연결리스트
+1) 한방향 연결리스트
+- 맨 앞 노드의 정보만 있고 나머지 노드는 따로 이름이 부여되거나 하지 않음
+  -> 찾으려는 노드 있을 시 head부터 하나씩 찾아야 함
+- 지원 연산: pushFront, pushBack, popFront, popBack, search, remove
+
+2) 양방향(원형) 연결리스트
+- 각 노드가 앞, 뒤 노드에 대한 정보를 가지고 있음
+- 지원 연산:  splice, moveAfter, moveBefore, insertBefore, insertAfter, pushFront, pushBack,
+deleteNode, popFront, popBack, search, first, last, isEmpty, join, split
+
+###코드###
+
+###1. Stack###
+class Stack:
+    def __init__(self):
+        self.items = []
+
+    def push(self, value):
+        self.items.append(value)
+
+    def pop(self):
+        try:
+            return self.items.pop()
+        except IndexError:
+            print("Stack is empty")
+
+    def top(self):
+        try:
+            return self.items[-1]
+        except IndexError:
+            print("Stack is Empty")
+
+    def __len__(self):
+        return len(self.items)
+
+    def isEmpty(self):
+        return self.__len__() == 0
+
+###2. Queue###
+class Queue:
+    def __init__(self):
+        self.items = []
+        self.front_index = 0
+
+    def enqueue(self, value):
+        self.items.append(value)
+
+    def dequeue(self):
+        if len(self.items) == 0 or self.front_index == len(self.items):
+            print("Queue is empty")
+        else:
+            x = self.items[self.front_index]
+            self.front_index += 1
+            return x
+
+###3. 한방향 연결리스트###
+class Node:
+    def __init__(self, key=None):
+        self.key = key
+        self.next = None
+
+    def __str__(self):
+        return str(self.key)
+    
+class SinglyLinkedList:
+    def __init__(self):
+        self.head = None
+        self.size = 0
+
+    def __len__(self):
+        return self.size
+
+    def printList(self):
+        v = self.head
+        while(v):
+            print(v.key, "->", end=" ")
+            v = v.next
+        print("None")
+
+    def pushFront(self, key):
+        new_node = Node(key)
+        new_node.next = self.head
+        self.head = new_node
+        self.size += 1
+
+    def pushBack(self, key):
+        new_node = Node(key)
+        tail = self.head
+        if tail == None:
+            self.head = new_node
+        else:
+            while tail.next:
+                tail = tail.next
+            tail.next = new_node
+        self.size += 1
+
+    def popFront(self):
+        # head 노드의 값 리턴. empty list이면 None 리턴
+        if self.head == None:
+            return None
+        else:
+            x = self.head
+            key = x.key
+            self.head = x.next
+            self.size -= 1
+            del x
+            return key
+
+    def popBack(self):
+        # tail 노드의 값 리턴. empty list이면 None 리턴
+        if self.head == None: return None
+        else:
+            prev, tail = None, self.head
+            while tail.next:
+                prev = tail
+                tail = tail.next
+            if self.head == tail: # 리스트에 노드가 하나만 있는 경우
+                self.head == None
+            else:
+                prev.next = None
+            key = tail.key
+            del tail
+            self.size -= 1
+            return key
+
+    def search(self, key):
+        # key 값이 저장된 노드 리턴. 없으면 None 리턴
+        v = self.head
+        while v:
+            if v.key == key: return v
+            v = v.next
+        return v
+
+    def remove(self, x):
+        # 노드 x를 제거한 후 key값 리턴, 노드 x가 None이거나 리스트가 비어있으면 None 리턴, 일치하는 노드 없을 시 False 리턴
+        if (x.key == None) or (self.size == 0):
+            return None
+        elif x == self.head:
+            self.popFront()
+        else:
+            prev, v = None, self.head
+            while v != x:
+                prev = v
+                v = v.next
+                if v.next == None: return False # 리스트에 x와 일치하는 노드 없음
+            prev.next = v.next
+            key = v.key
+            del v
+            self.size -= 1
+            return key
+            
+    def size(self):
+        return self.size
+
+###4. 양방향 연결리스트###
