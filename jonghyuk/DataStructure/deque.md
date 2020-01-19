@@ -25,6 +25,5 @@ dq.extend('structure') #여러 항목 뒤에 삽입
 dq.extendleft(reversed('python')) #여러 항목 앞에 삽입
 ```
 
-
 ## reference
 - 양성봉, [파이썬과 함께하는 자료구조의 이해](http://www.yes24.com/Product/Goods/57949931?scode=032&OzSrank=1)
