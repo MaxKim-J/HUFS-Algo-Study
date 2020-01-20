@@ -45,6 +45,17 @@
 - [구름 레벨](https://level.goorm.io/)
 - [프로그래머스](https://programmers.co.kr/)
 
+## 파이썬 알고리즘 풀때 유의사항
+파이썬은 c++, java보다 느려서 채점에 불리한 점이 있음. 백준에서 시간초과 안나려면...
+1. 입출력시 `import sys`해서 sys모듈로 입출력 처리하기
+  - `input()`은 `sys.stdin.readline()`으로
+  - `print()`는 `sys.stdout.write()`으로 대체할 것
+  - **일반 IDE에서는 안먹히고 터미널이나 명령 프롬프트에서 돌려야함!**
+2. `python3` 컴파일러보다 `pypy3`가 더 빠를 수 있다
+3. 재귀함수 사용할 경우 `sys.setrecursionlimit()`으로 최대 재귀 깊이를 설정해줘야 한다
+
+참고 : [파이썬으로 문제 풀 때 유의점](https://dailyheumsi.tistory.com/32)
+
 ## 깃공부 참고 사이트
 참고하시면 좋습니당  
 
