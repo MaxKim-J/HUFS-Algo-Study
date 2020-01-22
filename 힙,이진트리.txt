@@ -1,0 +1,80 @@
+트리: 연결리시트는 노드들이 한줄로 연결된 구조라면
+        트리는 부모-자식 관계를 계층적으로 표현한 자료구조
+이진트리: 자식노드의 수가 2개이상을 넘지않은 트리를 임
+용어정리:
+	부모노드 / 자식노드 : 한단계 걸쳐서 직접연결된 부모노드와 자식노드
+	조상노드 / 자손노드 : 부모노드를 포함하여 자신보다 높은 위치에 있는 모든 노드를 조상노드라 칭함
+	                             자식노드를 포함하여 자신보다 낮은 위치에 있는 모든 노드를 자손노드라 칭함
+	리프: 자식노드가 없는 노드를 리프노드라고 함
+	레벨 : 루트노드를 Level 0이라 하며 한단계씩 내려갈수록 노드의 level이 한단계씩 증가
+	깊이 : 해당노드에서 루트노드까지 도달하는데 필요한 엣지의 개수
+	경로 : 특정노드에서 원하는 노드까지 도달하는데 거쳐야하는 노드의 경우의 수를 경로
+	높이 : 리프노드에서 해당노드까지 도달하는데 거쳐야하는 엣지의 개수
+	트리 높이 : 루트노드의 높이
+	분지수 : 자신의 자식수
+	부트리 : 어떤 노드와 자신의 자손노드로 구성된 부분트리
+표현법 :
+1. [a,b,c,None,d,e,f]
+2. [a,[b,[],[d,[],[]]]......]
+보통 1번의 표현법을 사용하며, 루트노드부터 왼쪽부터 오른쪽의 순서로 index를 부여
+k기준으로 왼쪽 자식노드는 2k+1,오른쪽 자식노드느 2k+2, 부모노드는 (k-1)//2
+
+이진트리의 한 종류로 힙이 존재, 힙은 모양성질과 힙성질을 만족해야함
+
+※ 힙
+	1. 모양성질 : 마지막 레벨을 각 레벨의 노드는 모두 채워져 있어야한다.
+	2. 힙 성질 : 루트노드를 제외한 모든 노드는 부모노드의 key값보다 크지 않아야한다.
+	
+	두가지 성질을 만족시키는 이진트리를 힙 자료구조라 함
+	높이가 h라면, 노드의 개수n은 최소 2^h보다 큼
+	반대로 노드의 개수가 n이라면 높이는 최대 logn이 됨
+	구체적인 코드와 기능은 아래와 같음
+
+class Heap:
+	def __init__(self,L=[]):
+		self.A=L
+		self.make_heap(self.A)
+	def __str__(self):
+		return str(self.A)
+	def heapify_down(self, k, n): 
+		# n = 힙의 전체 노드수 [heap_sort를 위해 필요함]
+		# A[k]가 힙 성질을 위배한다면, 밑으로 
+		# 내려가면서 힙성질을 만족하는 위치를 찾는다
+		while 2*k+1 < n:           #왼쪽 자식노드가 있다 
+			L, R = 2*k + 1, 2*k + 2	 # k가 부모노드일때 왼쪽자식노드와 오른쪽자식노드의 index번호
+			if (L < n) and (self.A[L] > self.A[k]): #왼쪽 자식노드가 존재하고 왼쪽자식노드가 부모노드보다 크다
+				m = L#최대값의 index를 왼쪽자식노드로 지정
+			else: 
+				m = k#왼쪽 자식노드보다 부모노드가 크다면 부모노드를 최대값의 index로 지정
+			if R < n and (self.A[R] > self.A[m]): #오른쪽 자식노드가 존재하고 오른쪽 자식노드가 이전에 지정한 최대값보다 크다.
+				m = R # m = A[k], A[L], A[R] 중 최대값의 인덱스를 오른쪽 자식노드 인덱스로 지정
+			if m != k:	# 최대값이 부모노드가 아닌 자식노드에 있다
+				self.A[k], self.A[m] = self.A[m], self.A[k] #최대key값을 부모노드로 이동
+				k = m#이동시킨 자식노드를 부모노드로 재지정한후 힙조건을 만족시킬때까지 밑으로 계속 내려감
+			else:
+						break#계속해서 이동시킨후 더이상 자식노드가 없다면,break
+	def make_heap(self):
+		n = len(self.A)#노드의 개수
+		for k in range(n-1, -1, -1):#A[n-1] → ... → A[0]
+			self.heapify_down(k, n)#k인 index부터 시작하여,n즉 가장밑바닥까지 heapify_down을 실행
+	def heap_sort(self):#힙이 아니라면 make_heap으로 힙을 만든후,heapify_down을 반복시행하여 힙을 오름차순으로 재배치
+			n = len(self.A)	
+			for k in range(len(self.A)-1, -1, -1):
+				self.A[0],self.A[k] = self.A[k],self.A[0]#맨밑에 오른쪽 자식노드부터 시작하여 계속해석 루트노드와 key변경 
+				n = n - 1#A[n-1]은 정렬되었으므로
+				self.heapify_down(0, n)
+	def heapify_up(self, k):#올라가면서 A[k]를 재베치,힙성질이 만족한다는 전제에서 시작
+		while k > 0 and self.A[(k-1)//2] < self.A[k] :#k가 루트노드가 아니고 k의 부모노드가 k보다 크다면,key값을 바꿔주면서 재배치
+			self.A[k], self.A[(k-1)//2] = self.A[(k-1)//2], self.A[k]
+			k = (k-1)//2#해당노드와 바뀐루트노드만 비교해서 계속 변화 
+	def insert(self, key):
+		self.A.append(key)
+		self.heapify_up(len(self.A)-1)#새로추가된 노드의 index는 len(self.A)-1이기때문에
+	def delete_max(self):
+		if len(self.A) == 0:
+			return None
+		key = self.A[0]
+		self.A[0], self.A[len(self.A)-1] = self.A[len(self.A)-1], self.A[0]
+		self.A.pop()	# 실제로 리스트에서 delete!
+		self.heapify_down(0, len(self.A)) # len(self.A) = n
+		return key
