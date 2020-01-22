@@ -1,0 +1,68 @@
+트리: 부모-자식 관계를 계층적으로 표현한 자료구조
+
+이진트리: 모든 노드의 자식이 2개를 넘지 않는 트리
+ - 순회: 이진트리의 노드를 빠짐없이 방문하는 일정한 규칙 예)노드의 key값을 빠짐없이 출력, 노드의 key값에 모두 일정한 값을 더함
+  1) Preorder: MLR (Middle-Left subtree-Right subtree)
+  2) Inorder: LMR (Left subtree - Middle - Right subtree)
+  3) Postorder: LRM (Left subtree - Right subtree - Middle)
+  * Preorder&Inorder시퀀스 혹은 Postorder&Inorder시퀀스가 있을 경우 원래 이진트리 복원 가능. 이외는 안됨
+
+Heap: 특별한 성질을 가진 이진트리 중 하나.
+ - 모양 성질
+  1) 마지막 레벨을 제외한 각 레벨의 노드는 모두 채워져 있어야 함
+  2) 마지막 레벨에선 노드들이 왼쪽부터 채워져야 함
+ - 힙 성질
+   : 루트 노드를 제외한 모든 노느데 저장된 값(key)은 자신의 부모노드의 값보다 크면 안됨(=Max Heap)
+ - 지원 연산: heapify_down(make_heap을 위해 필요), make_heap, heap_sort, heapify_up(insert를 위해 필요), insert, delete_max
+
+###코드###
+
+###Heap###
+class Heap:
+    def __init__(self, L=[]):
+        self.A = L
+        self.make_heap()
+
+    def __str__(self):
+        return str(self.A)
+
+    def heapify_down(self, k, n):
+        while 2*k+1 < n:
+            L, R = 2*k+1, 2*k+2
+            if self.A[L] > self.A[k]: m = L
+            else: m = k
+            if R < n and self.A[R] > self.A[m]: m = R
+            # m = A[k], A[L], A[R] 중 최대값의 인덱스
+            if m != k:
+                self.A[k], self.A[m] = self.A[m], self.A[k]
+                k = m
+            else: break
+
+    def make_heap(self):
+        n = len(self.A)
+        for k in range(n-1, -1, -1):
+            self.heapify_down(k,n)
+
+    def heap_sort(self):
+        n = len(self.A)
+        for k in range(len(self.A)-1, -1, -1):
+            self.A[0], self.A[k] = self.A[k], self.A[0]
+            n = n-1
+            self.heapify_down(0, n)
+
+    def heapify_up(self, k):
+        while k > 0 and self.A[(k-1)//2] < self.A[k]:
+            self.A[k], self.A[(k-1)//2] = self.A[(k-1)//2], self.A[k]
+            k = (k-1)//2
+
+    def insert(self, key):
+        self.A.append(key)
+        self.heapify_up(len(self.A)-1)
+
+    def delete_max(self):
+        if len(self.A) == 0: return None
+        key = self.A[0]
+        self.A[0], self.A[len(self.A)-1] = self.A[len(self.A)-1], self.A[0]
+        self.A.pop()
+        heapify_down(0, len(self.A))
+        return key
