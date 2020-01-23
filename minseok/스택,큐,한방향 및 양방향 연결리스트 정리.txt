@@ -1,0 +1,243 @@
+※스택
+	리스트를 이용하여 구현
+	스택,큐 모두 삽입하는 방식은 똑같지만 삭제시 원칙이 다름
+	LIFO(Last in First Out : 나중에 들어온것이 마지막에 나감)
+	지원기능 : push,pop,top
+	아래 코드의 분석을 통해 스택 공부함
+
+class Stack:
+	def __init__(self):
+		self.items = []	# 데이터 저장을 위한 리스트 준비
+	def push(self, val):
+		self.items.append(val)
+	def pop(self):
+		try:	# pop할 아이템이 없으면
+			return self.items.pop()
+		except IndexError:	# indexError 발생
+			print("Stack is empty")
+	def top(self):
+		try:
+			return self.items[-1]
+		except IndexError:
+			print("Stack is empty")
+	def __len__(self):	# len()로 호출하면 stack의 item 수 반환
+ 		return len(self.items)
+	def isEmpty(self):
+		return self.__len__() == 0
+
+※큐
+	큐 또한 리스트를 이용하여 구현
+	큐의 삭제 방식은 FIFO, 먼저 들어온것이 먼저 나가는 방식
+	FIFO방식이기때문에 pop기능을 사용하여 삭제를 하나 self.front_index사용하여
+	리스트를 그대로 둔상태에서 front_index를 사용하여 삭제 길이를 산출
+	지원기능: enqueue,dequeue
+	아래 코드 분석을 통해 큐를 학습함
+	
+class Queue:
+	def __init__(self):
+		self.items = []# 데이터 저장을 위한 리스트 준비
+		self.front_index=0 
+	def enqueue(self, val):
+		self.items.append(val)
+	def dequeue(self):
+		if len(self.items) ==0 or self.front_indext==len(self.items):
+			print("Queue is empty")
+		else:
+			x=self.items[self.front_index]
+			self.front_index+=1
+			return x
+	def front(self):
+		try:
+			return self.items[-1] 
+		except IndexError:
+			print("Queue is empty")
+	def __len__(self):
+ 		return len(self.items)
+	def isEmpty(self):
+		return len(self)
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+※한방향 연결리스트
+
+	헤드노드부터 시작하여 노드의 next를 사용하여 노드를 한방향으로 연결시킨 노드를 구현
+	거꾸로 노드를 탐색하기는 불가
+	지원하는 기능 : pushfront(O(1)), pushback(O(n)), popfront(O(1)), popback(O(n)), search(O(n)), remove(O(n))
+	헤드노드부터 일일히 탐색해야하기때문에 수행시간이 김
+	함수별로 코드 분석을 통해 공부하였음
+class Node: 
+	def __init__(self, key, value=None):
+		self.key = key      # 노드에 저장되는 key 값으로 이 값으로 노드를 구분함
+		self.value = value  # 추가 정보가 있다면 value에 저장함 (optional)
+		self.next = None    # 다음에 연결될 노드(의 주소 또는 reference): 초기값은 None
+	
+	def __str__(self): 		# print함수를 이용해 출력할 때의 출력 문자열 리턴
+		return str(self.key)
+class SinglyLinkedList:
+	def __init__(self):
+		self.head = None	# head 노드를 저장함
+		self.size = 0			# 리스트의 노드 개수를 저장함
+        	def __len__(self):
+		return self.size
+	def pushFront(self, key):
+                
+		new_node = Node(key)
+		new_node.next = self.head
+		self.head = new_node			# head 노드가 바뀜
+		self.size += 1
+	def pushBack(self, key):
+		new_node = Node(key)
+		if self.size == 0:  # empty list --> new_node becomes a head!
+			self.head = new_node
+		else:
+			tail = self.head
+			while tail.next != None:	# follow links until tail
+				tail = tail.next
+			tail.next = new_node
+		self.size += 1
+	def popFront(self):
+                if self.head==None:
+                        return None
+                else:   
+			x = self.head
+			key = x.key
+			self.head = x.next
+			self.size -= 1
+			del x
+			return key
+	def popBack(self):
+		if self.size == None: 
+			return None
+		else:
+			prev= None,
+			tail = 	self.head
+			while tail.next != None:
+				prev = tail
+				tail=tail.next 	
+			key, value = tail.key, tail.value
+			tail = current
+			if prev== None:	
+				self.head = None
+			else:
+				prev.next = tail.next
+                        key=tail.key
+                        del tail
+			self.size -= 1
+			return key
+	def search(self, key):
+		v = self.head
+		while v !=None:
+			if v.key == key:
+				return v
+			v = v.next
+		return v
+	def remove(self,key):
+                v=self.search(key)
+                if v==None:
+                        return None
+                elif v==self.head:
+                        self.popFront()
+                else:
+                        x=self.head
+                        while x.next !=v:
+                                x=x.next
+                        prev=x
+                        prev.next=v.next
+
+
+
+
+
+
+
+
+
+
+---------------------------------------------------------------------------------------
+※양방향 연결리스트
+	한방향연결리스트는 연산과정에서 헤드노드부터 시작하여 하나씩 탐색해야하기때문에 비효율적
+	이러한 비효율성을 보완하고자 노드에 prev를 추가하여 기능을 개선
+	헤드노드는 dummy노드로 지정/ tail노드 다음노드는 헤드노드,헤드노드의 이전노드는 tail노드 → 원형연결리스트
+	지원하는 기능 (splice기능을 기반으로 기능을 구현) : spliec,moveafter,movebefore,insertafter,insertbefore,pushfront,pushback,deletenode,popfront,popback
+						     moveafter,movebefore(O(1)) → 기존의 있던 노드를 옮기는 방식
+						     insertafter,insertbefore(O(1)),pushfront,pushback(O(1)) : 새로운 노드를 생성한후 추가하는 방식
+						     deletenode(O(1)),popfron,t,popback(O(1)) : 기존의 노드를 삭제하는 과정
+						     #양방향 연결리스트는 수행시간이 짧아진다는 장점이 있다.
+	자세한 코드는 아래와 같으며, 각 코드는 분석하여 공부함
+
+class Node:
+	def __init__(self, key=None):
+		self.key = key
+		self.prev = self
+		self.next = self
+	def _str__(self): # print(node)인 경우 출력할 문자열
+		return str(self.key)	
+class DoublyLinkedList:
+	def __init__(self):
+		self.head = Node()
+		self.size=0# dummy 노드로만 이루이진 빈 리스트	
+	def splice(self, a, b, x): # cut [a..b] after x#cut을 한후 옮기는 방식
+		if a == None or b == None or x == None: 
+			return
+		# 1. [a..b] 구간을 잘라내기 
+		a.prev.next = b.next
+		b.next.prev = a.prev
+		'''
+                	ap=a.prev
+                	bn=b.next
+                	ap.next=bn
+                	bn.prev=ap
+                	'''
+		# 2. [a..b]를 x 다음에 삽입하기
+		'''
+                	xn=x.next
+                	xn.prev=b
+                	'''
+		x.next.prev = b 
+		b.next = x.next#b.next=xn
+		a.prev = x
+		x.next = a
+	def moveAfter(self,a,x):
+		self.splice(a,a,x)	
+	def moveBefore(self,a,x):
+		self.splice(a,a,x.prev)
+	def insertAfter(self,x,key):
+		b=Node(key)
+		self.splice(b,b,x)
+		self.size+=1
+		'''
+                	self.moveafter(Node(key),x)
+                	self.size+=1
+		'''
+	def insertBefore(self,x,key):
+		b=Node(key)
+		self.splice(b,b,x.prev)
+		self.size+=1
+		'''
+                	self.moveafter(Node(key),x.prev)
+                	self.size+=1
+		'''
+	def pushFront(self,key):
+		self.insertAfter(self.head,key)
+		self.size+=1
+	def pushBack(self,key):
+		self.insertBefore(self.head,key) #원형연결리스트이므로 self.head.prev는 tail
+		self.size+=1
+	def deleteNode(self,x): # delete x,x노드의 prev,next를 변경해주는 방식으로 삭제
+		if x == None or x == self.head: 
+			return
+		x.prev.next, x.next.prev = x.next, x.prev
+		self.size-=1
+
+	def popFront(self):
+		if self.head.next == self.head: 
+			return None
+		key = self.head.next.key
+		self.deleteNode(self.head.next)
+		return key
+		self.size-=1
+
+	def popBack(self):
+		self.deleteNode(self.head.prev)
+		self.size-=1
+		

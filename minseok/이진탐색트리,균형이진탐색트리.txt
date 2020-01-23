@@ -1,0 +1,458 @@
+트리: 연결리시트는 노드들이 한줄로 연결된 구조라면
+        트리는 부모-자식 관계를 계층적으로 표현한 자료구조
+이진트리: 자식노드의 수가 2개이상을 넘지않은 트리를 임
+※이진탐색트리 
+이진탐색트리 : 이진트리 조건에서 오른쪽자식,부모노드,왼쪽자식노드 순으로 key값이 큰 트리를 이진탐색트리라한다.
+	        이진탐색트리의 경우 inorder로 순회시, 낮은순서대로 탐색이 진행된다.
+ 	       자세한 코드는 아래와 같고, 코드분석을 통해 해당코드를 학습함
+class Node:
+    def __init__(self, key):
+        self.key = key
+        self.parent = self.left = self.right = None
+
+    def __str__(self):
+        return str(self.key)
+
+class BST:
+    def __init__(self):
+        self.root = None
+        self.size = 0
+    def __len__(self):
+        return self.size
+
+    def preorder(self, v):
+        if v:
+            print(v.key, end=' ')
+            self.preorder(v.left)
+            self.preorder(v.right)
+
+    def inorder(self, v):
+        if v:
+            self.inorder(v.left)
+            print(v.key,end=' ')
+            self.inorder(v.right)  
+    def postorder(self, v):
+        if v:
+            self.postorder(v.left)
+            self.postorder(v.right)
+            print(v.key,end=' ')   
+    def find_loc(self, key):
+        if self.size ==0:
+            return None
+        p=None
+        v=self.root
+        while v:
+            if v.key==key:
+                return v
+            elif v.key>key:
+                p=v
+                v=v.left
+            elif v.key<key:
+                p=v
+                v=v.right
+        return p
+	#결론적으로 세가지 경우의 수,1.비어있는 트리 → None / 2. 찾고자하는 노드가 없을때 → 부모노드를 return / 3. 찾았을때 → 해당노드를 return
+    def search(self, key):
+        p=self.find_loc(key)
+        if p != None and p.key==key:#트리가 비어있지않고 해당노드를 찾았을때, p를 return 
+            return p
+        else:#트리가 비어있거나 찾고자하는 노드가 없을때 None을 return
+            return None 
+    def insert(self, key):        
+        p=self.find_loc(key)
+        if p==None or p.key != key:#비어있거나 찾고자하는 노드가 없을때
+            v=Node(key)
+            if p==None:#비어있을때는 root노드로 지정
+                self.root=v 
+            else:#찾고자하는 노드가 없을때
+                v.parent=p
+                if p.key>=key:
+                    p.left=v
+                else:
+                    p.right=v
+            self.size+=1
+            return v
+        else: #이미 해당key의 노드가 존재할때  
+            print("key already exist")
+            return None
+    def deleteByMerging(self, x):
+        a,b,pt=x.left,x.right,x.parent
+        if a == None:
+            c=b
+        else:
+            c=m=a
+            while m.right:
+                m=m.right
+            m.right=b
+            if b:
+                b.parent=m
+        if self.root==x:
+            self.root=c
+            if c:
+                c.parent=None
+        else:
+            if pt.left==x:
+                pt.left=c
+            else:
+                pt.right=c
+            if c:
+                c.parent=pt
+        self.size-=1
+    def deleteByCopying(self, x):
+        if x == None:
+            return None
+        else:
+            if x.left != None:
+                c=x.left
+                while c.right:
+                    c=c.right
+                x.key=c.key
+                if c.parent==x:
+                    if c.left:                        
+                        c.left.parent=x
+                    x.left=c.left
+                    c.parent=None
+                    c.left=None
+                    c.key=None                   
+                elif c.left !=None:
+                    c.left.parent=c.parent
+                    c.parent.right=c.left
+                    c.parent=c.left=c.key=None              
+                else:
+                    c.parent.right=None
+                    c.parent=None
+                    c.key=None
+            else:
+                if x.right !=None:
+                    c=x.right
+                    x.key=c.key
+                    x.right=c.right
+                    if c.right:
+                        c.right.parent=x
+                    c.parent=c.right=c.key=None
+                else:
+                    if x.parent:
+                        if x.parent.left==x:
+                            x.parent.left=None
+                        else:
+                            x.parent.right=None
+                        x.parent=x.key=None
+                    else:
+                        x.key=None
+                        self.root=None
+        self.size-=1
+    def height(self, x):
+        if x==None:
+            return -1
+        else:
+            l=self.height(x.left)
+            r=self.height(x.right)
+            x.height=max(l,r)+1
+        return x.height
+    def number(self, x):
+        if x == None: 
+            return None
+        else:
+            if x.left == None and x.right == None:
+                return 1
+            if x.left ==None:
+                x.number=self.number(x.right)+1
+            elif x.right ==None:
+                x.number=self.number(x.left)+1
+            else:
+                x.number=(self.number(x.left)+self.number(x.right))+1
+            return x.number
+
+※균형이진 탐색트리
+
+이진탐색트리의 많은 기능들이 수행시간이 최대 O(높이)이다.
+이때 최악의 경우, O(n)이므로 시간이 오래걸리는 단점이 있다.
+따라서 높이를 최대 logN으로 유지시켜줘 수행시간이 최대 O(logN)으로 유지시켜주는 트리를 균형이진탐색트리라한다.
+균형이진 탐색트리에는 3가지종류의 자료구조가 존재하는데 1. AVL트리, 2. Red-Black트리, 3. splay트리
+
+1. AVL트리
+	Balance Factor(왼쪽 부트리의 높이-오른쪽 부트리의 높이)가 -1,0,1 중에서 결정남
+	AVL트리는 부모클래스 BST를 통해 기능을 구현하기때문에 super메서드를 사용함
+	Balance Factor의 절대값이 2이상 커지게되면 rotate right, rotate left를 사용하여 높이를 조정
+	자세한 코드는 아래와 같고 코드분석을 통해 학습함
+
+class Node:
+	def __init__(self, key):
+		self.key = key
+		self.parent = self.left = self.right = None
+        self.height=0
+	def __str__(self):
+		return str(self.key)
+class BST:
+	def __init__(self):
+		self.root = None
+		self.size = 0
+	def __len__(self):
+		return self.size
+	def __iter__(self):
+		return self.root.__iter__()
+	def __str__(self):
+		return " - ".joint(str(k) for k in self)
+	def preorder(self, v):
+		if v:
+			print(v.key,end=' ')
+			self.preorder(v.left)
+			self.preorder(v.right)
+	def inorder(self, v):
+		if v:
+			self.inorder(v.left)
+			print(v.key,end=' ')
+			self.inorder(v.right)  
+	def postorder(self, v):
+		if v:
+			self.postorder(v.left)
+			self.postorder(v.right)
+			print(v.key,end=' ')   
+	def find_loc(self, key):#key값의 위치를 출력,없다면 부모노드를 출력,비어있는 트리라면 None을 리턴
+		if self.size ==0:
+			return None
+		p=None#추적하고자하는 노드의 이전노드를 기록
+		v=self.root#추적할노드
+		while v:#while v !=None
+			if v.key==key:
+				return v
+			elif v.key>key:
+				p=v
+				v=v.left
+			elif v.key<key:
+				p=v
+				v=v.right
+		return p#찾고자하는 key가 없다면,부모노드를 return
+                        #결과:key값을 찾는경우/key값이 없어서 부모노드를 reuturn/비어있는 트리라면 None을 리턴
+	def search(self, key):
+		p=self.find_loc(key)
+		if p != None and p.key==key:#해당key값을 찾은경우
+			return p
+		else:#비어있는 tree이거나 key을 못찾은 경우
+			return None 
+	def insert(self, key):
+			p=self.find_loc(key)
+			if p==None or p.key != key:#비어있는 트리이거나 비어있지는 않더라도 찾고하는 key값이 없을때
+				v=Node(key)
+				if p==None:#비어있는트리
+					self.root=v 
+				else:
+					v.parent=p#새롭게 생성한 노드를 부모노드와 연결시켜줌
+					if p.key>=key:
+						p.left=v#새로운 자식노드와 부모노드를 연결시켜줌
+					else:
+						p.right=v
+				self.size+=1
+				return v
+			else:#기존의 key값이 있는경우
+				print("key already exist")
+				return None
+    def height(self, x):
+        if x==None:
+            return -1
+        else:
+            l=self.height(x.left)
+            r=self.height(x.right)
+            x.height=max(l,r)+1
+        return x.height
+    def number(self, x):
+        if x == None: 
+            return None
+        else:
+            if x.left == None and x.right == None:
+                return 1
+            if x.left ==None:
+                x.number=self.number(x.right)+1
+            elif x.right ==None:
+                x.number=self.number(x.left)+1
+            else:
+                x.number=(self.number(x.left)+self.number(x.right))+1
+            return x.number
+	def deleteByMerging(self, x):
+		a,b,pt=x.left,x.right,x.parent
+		if a == None:#왼쪽자손노드가없다
+			c=b#c는 없어질 노드와 교환할 노드/교환할노드로 오른쪽 노드를 지정
+		else:#왼쪽자손노드가 있다.
+			c=m=a#c는 x와 대체할 노드,m은 교환할 노드의 자손중 가장큰값을 의미,일단 왼쪽자손노드로 지정
+			while m.right:#x의 왼쪽자식노드 기준에서 오른쪽 자식노드가 none일때까지 반복,c의 자손노드의 가장큰값을 찾는과정
+				m=m.right#오른쪽 자손노드로 한칸씩 밀어줌
+			m.right=b#오른쪽 자손노드를 밑으로 내려줌,오른쪽자손노드와 최대값의 노드를 자손노드로 연결
+			if b:#오른쪽 자식노드가 비어있지않은 경우
+				b.parent=m#부모로 연결
+		if self.root==x:#없앨 노드x가 루트노드와 같다
+			self.root=c#바꿀노드c를 루트노드로 지정,x가 리프노드라면 c는 None이 됨
+			if c:#c가 존재한다→x가 리프노드가 아니다.
+				c.parent=None
+		else:#x가 루트노드가 아니다
+			if pt.left==x:#x가 pt의 왼쪽 자식노드라면
+				pt.left=c#x와 바꿔줄노드c를 pt.left로 지정
+			else:#x가 pt의 오른쪽 자식노드라면
+				pt.right=c#x와 바꿔줄 노드c를 pt.right로 지정
+		if c:#바꿔줄c가 존재한다면
+			c.parent=pt#c의 부모노드를 pt를 지정
+		self.size-=1
+    def deleteByCopying(self, x):
+        if x == None:
+            return None
+        else:
+            if x.left != None:
+                c=x.left
+                while c.right:
+                    c=c.right
+                x.key=c.key
+                if c.parent==x:
+                    if c.left:                        
+                        c.left.parent=x
+                    x.left=c.left
+                    c.parent=None
+                    c.left=None
+                    c.key=None                   
+                elif c.left !=None:
+                    c.left.parent=c.parent
+                    c.parent.right=c.left
+                    c.parent=c.left=c.key=None              
+                else:
+                    c.parent.right=None
+                    c.parent=None
+                    c.key=None
+            else:
+                if x.right !=None:
+                    c=x.right
+                    x.key=c.key
+                    x.right=c.right
+                    if c.right:
+                        c.right.parent=x
+                    c.parent=c.right=c.key=None
+                else:
+                    if x.parent:
+                        if x.parent.left==x:
+                            x.parent.left=None
+                        else:
+                            x.parent.right=None
+                        x.parent=x.key=None
+                    else:
+                        x.key=None
+                        self.root=None
+        self.size-=1
+    def rotateLeft(self, x):
+        if x==None:
+            return None
+        z=x.right
+        if z==None:
+            return None
+        b=z.left
+        z.parent=x.parent
+        if x.parent:
+            if x.parent.left==x:
+                x.parent.left=z
+            else:
+                x.parent.right=z
+        z.left=x
+        x.parent=z
+        x.right=b
+        if b:
+            b.parent=x
+        if x==self.root:
+            self.root=z
+
+    def rotateRight(self, z):
+        if z==None:
+            return None
+        x=z.left
+        if x==None:
+            return None
+        b=x.right
+        x.parent=z.parent
+        if z.parent:
+            if z.parent.left==z:
+                z.parent.left=x
+            else:
+                z.parent.right=x
+        x.right=z
+        z.parent=x
+        z.left=b
+        if b:
+            b.parent=z
+        if z==self.root:
+            self.root=x   
+
+class AVL(BST):
+    def rebalance(x,y,z):
+        if z.left==y:
+            if y.left==x:
+                super(AVL,self).rotateRight(z)
+            elif y.right==x:
+                super(AVL,self).rotateLeft(y)
+                super(AVL,self).rotateRight(z)
+        if z.right==y:
+            if y.left==x:
+                super(AVL,self).rotateRight(y)
+                super(AVL,self).rotateLeft(z)
+            elif y.right==x:
+                super(AVL,self).rotateLeft(z)
+        return self.root
+    def insert(self,key):
+        v=super(AVL,self).insert(key)
+        v.height=super(AVL,self).height(v)
+        v.left.height=super(AVL,self).height(v.left)
+        v.right.height=super(AVL,self).height(v.right)
+        if v.left.height>v.right.height:
+            high=v.left.height
+            low=v.right.height
+        else:
+            high=v.left.height
+            low=v.right.height
+        if high-low>1:
+            z=v
+            if z.left.height>=z.right.height:
+                y=z.left
+            else:
+                y=z.right
+            if y.left.height>=y.right.height:
+                x=y.left
+            else:
+                x=y.right
+            v=self.rebalance(x,y,z)
+        v=v.parent       
+    def delete(self,u):
+        v=super(AVL,self).deleteByCopying(u)
+        while v != None:
+            v.height=super(AVL,self).height(v)
+            v.left.height=super(AVL,self).height(v.left)
+            v.right.height=super(AVL,self).height(v.right)
+            if v.left.height>v.right.height:
+                high=v.left.height
+                low=v.right.height
+            else:
+                high=v.left.height
+                low=v.right.height
+            if high-low>1:
+                z=v
+                if z.left.height>=z.right.height:
+                    y=z.left
+                else:
+                    y=z.right
+                if y.left.height>=y.right.height:
+                    x=y.left
+                else:
+                    x=y.right
+                v=self.rebalance(x,y,z)
+            v=v.parent
+
+2. Red-Black 트리 
+	이진탐색트리에서 다음 다섯가지조건을 만족하는 트리를 Red-Black트리라함
+		1.각 노드의 Red 혹은 Black의 색을 갖는다.
+		2. 루트노드는 Black이다.
+		3. 리프노드인 NIL노드의 색은 Black으로 정의한다.
+		4. 어떤 노드가 Red라면, 두 자식노드는 모두 black이다.
+		5. 어떤 노드에서 서브트리의 리프 NIL노드까지의 모든경로에 포함된 black노드의 개수는 같다.
+		    → black height라고 부르며 여기서 문제가 발생하면, 색을 변화시켜줘 해당조건을 만족시킴
+
+3. splay트리
+	AVL트리나 Red-Black트리는 균형이 깨지면 회전을 통해 균형을 맞추게되는 splay트리는 강제로 균형을 맞추지 않고
+	한번 탐색되는 key값을 앞으로도 자주 탐색되는 key값으로 판단하여 루트노드에 위치시키는 전략을 사용하여 평균적인
+	연산시간을 O(logN)으로 유지함, zig(rotate Right),zag(rotate Left)사용하여 특정노들 루트노드로 옮김
+	splaying → zig,zag를 사용하여 특정노드를 루트노드로 위치시키는 것을 의미
+	splay트리 또한 부모클래스로 BST를 사용
+
+
