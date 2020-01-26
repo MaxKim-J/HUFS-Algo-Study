@@ -1,0 +1,82 @@
+﻿#BST 이진탐색트리
+-bst의 노드 v의 key값은 왼쪽 자손 노드들의 key값보다 커야하고, 오른쪽 자손노드들의 key값보다 작아야한다. 
+
+1. 탐색 연산 search
+def find_loc(self, key): # if key is in T, return its Node
+	# if not in T, return the parent node under where it is inserted
+	if self.size == 0: return None
+	p = None    # p = parent node of v
+	v = self.root
+	while v:    # while v != None
+		if v.key == key: return v
+		else:
+			if v.key < key:
+				p = v
+				v = v.right
+			else:
+				p = v
+				v = v.left
+	return p
+
+def search(self, key):
+	p = self.find_loc(key)
+	if p and p.key == key:
+		return p
+	else:
+		return None
+
+2. insert 연산 
+위치 찾기
+삽입할 수가 key보다 크면 오른쪽 아래, 작으면 왼쪽 아래로 내려감
+
+def insert(self, key):
+	v = Node(key)
+	if self.size == 0: 
+		self.root = v
+	else:
+		p = self.find_loc(key)
+		if p and p.key != key: # p is parent of v
+			if p.key < key: p.right = v
+			else: p.left = v
+			v.parent = p
+	self.size += 1
+	return v
+
+3. delete 
+1) delete by merging
+x를 지우고자 할때
+1. x의 left 서브트리를 x자리로 가져옴
+2. r 서브트리=left 서브트리의 가장 큰 노드의 오른쪽 자식노드
+
+2)delete by copying
+1. l에서 가장 큰 값 노드 y찾음
+2. y의 key 값을 x의 key 값으로 카피
+3. y의 왼쪽 서브트리를 y의 위치로 올림
+
+#균형 이진 탐색트리
+이진탐색트리의 연산 시간은 오직 트리 높이 h 에 의해 결정되는데, 문제는 최악의
+경우엔 h = O(n) 이 되어 탐색, 삽입, 삭제 연산이 매우 느림
+트리 높이를 작게 유지하면 ,삽입, 삭제 연산을 반복하더라도 n 개의 노드를 갖는 이진트리의 높이를 항상 O(logn) 이 되도록 유지할 수 있음
+-->균형 이진 탐색트리
+1. AVL트리
+모든 노드에 대해서, 노드의 왼쪽 부트리와 오른쪽 부트리의 높이 차이가 1 이하 인 이진탐색트리
+search, insert, delete 모두 O(log n)번 내 실행 가능!
+
+2. RED-BLACK 트리
+리프노드의 두 자식노드인 NIL 노드는 None 노드라고 하고, Red-Black 트리를 정의하는 동안 리프노드 라고 부름 (NIL 노드가 아닌 일반 노드를 내부 노드라 부름)
+*규칙
+1. 각 노드는 red 또는 black의 색을 갖는다
+2. 루트노드는 black이다
+3. 리프노드인 NIL 노드의 색은 black으로 정의한다
+4. 어떤 노드가 red라면, 두 자식노드는 모두 black이다
+5. 어떤 노드에서 서브트리의 리프 NIL노드까지의 모든 경로에 포함된 black 노드의 개수는 같다. (이를 black-height라고 부름)
+search, insert, delete 모두 O(log n)
+
+3. SPLAY 트리
+Splay 트리는 강제로 균형을 맞추지 X
+한번 탐색되는 key 값이 앞으로도 탐색될 가능성이 높다는 성질(locality of the access frequency)을 활용
+자주 탐색되는 key 값을 가능하면 루트노드 (또는 루트노드와 가까운 곳)에 위치시키는 전략을 사용
+평균적인 연산 수행 시간을 O(log n) 으로 유지함. 
+(단, 최악의 경우의 연산 수행시간은 매우 나쁠 수 있음)
+m 번의 search, insert, delete 연산을 섞어서 수행하고 n 개의 노드가 splay 트리에 저장되었다면, 총 O(m log n) 시간이면 충분하다 는 증명이 존재
+1번 연산-O(log n)
