@@ -2,6 +2,8 @@
 2020.01.28  
 선택/버블/삽입/힙  
 
+출처: https://dataleaf.tistory.com/entry/Markdown에서-수식-입력하기 [정보의 잎사귀]
+
 ## 선택정렬(Selection Sort)
 ### 동작
 배열에서 가장 큰 원소를 찾아 이 원소와 배열 끝자리에 있는 원소와 자리를 바꿈  
@@ -124,3 +126,68 @@ def insertion_sort(arr):
 **정리**
 - 선택/버블 정렬 : n개짜리 배열에서 시작하여 아직 정렬되지 않은 배열의 크기를 하나씩 줄인다
 - 삽입 정렬 : 1개짜리 배열에서 시작하여 이미 정렬된 배열의 크기를 하나씩 늘린다
+
+## 힙정렬(Heap sort)
+### 정의
+힙을 이용해 정리를 하는 알고리즘
+
+### 힙
+이진트리, 맨 아래층을 제외하고는 완전히 채워져 있고 맨 아래층은 왼쪽부터 꽉 채워져 있음  
+각 노드의 값은 자기 자식의 값보다 작음(min heap)
+꽉 찬 이진트리이기 때문에 그냥 리스트로도 구현 가능  
+A[k]의 자식은 A[2k]와 A[2k+1]  
+
+###make heap
+1. 맨 뒤에서부터 따져서 힙 성질에 관해 문제가 생길 수 있는 첫번째 원소를 대상으로 체크(뒤에서부터 따졌을 때 자식이 있는 최초의 노드부터 따지기 시작)
+2. 따지는 노드의 값이 자식보다 클 경우, 따지는 노드를 자식 자리로 내림
+3. 다음 순번 노드에 반복
+4. 중간에 루트가 자식 중 작은 값보다 크지 않은 경우를 만나면 중단
+```python
+def make_heap(arr, n):
+  for i in range(n//2, 0, -1):
+  # n//2는 루트가 아닌 노드 중 맨 마지막 노드의 인덱스
+    heapify(arr, i, n)
+
+def heapify(arr, k, n):
+  left, right = 2k, 2k+1
+  # 양쪽 자식을 다 가지고 있는 경우
+  if right <= n:
+  # 좌우부터 비교해서 작은 값을 smaller로
+    if arr[left] < arr[right]:
+      smaller = left
+    else:
+      smaller = right
+  # 왼쪽 자식만 가진 경우
+  elif left <= n:
+    # 왼쪽을 smaller로
+    smaller = left
+  # 리프노드인 경우
+  else:
+    return
+  # 재귀적으로 따라가면서 리프까지 내리기, 아닌 경우 그냥 종료
+  if arr[smaller] < arr[k]:
+    arr[k], arr[smaller] = arr[smaller], arr[k]
+    heapify(arr, smaller, n)
+```
+n/2번의 히피파이를 수행함 => 수행시간은 O(log n)이 아니라 O(n):이유 이해하기  
+
+### heap sort
+#### 동작
+맨 끝 노드를 루트로 옮긴 후, 루트에 대한 히피파이를 수행하여 자리를 찾게 한다  
+루트의 값을 맨 마지막 값으로 옮기니, min heap에서는 최소값이 계속 뒤로 이동하는 셈이고, 내림차순 정렬이 가능하다  
+
+```python
+def heap_sort(arr, n):
+  make_heap(arr,n)
+  # n-1번 도는 for문, i는 맨 끝 인덱스를 가리킴
+  for last in range(n-1, 1, -1):
+    arr[0], arr[last] = arr[last], arr[0]
+    # 루트에서 내려간 노드 하나를 제외한후 루트에 대하여 히피파이(i-1)
+    heapify(arr, 0, last)
+```
+#### 수행 시간
+- makeheap : O(n)시간
+- for루프는 n-1번 순환
+- heapify는 O(log n)시간
+- 대충 봤을 때는 O(n log n)
+
