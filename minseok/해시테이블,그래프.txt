@@ -1,0 +1,237 @@
+﻿※해시테이블
+
+해시테이블 : 해시테이블은 칸마다 숫자가 적힌 일종의 서랍
+key값을 규칙에 따라 서랍인 해시테이블에 넣는데 그 규칙을 hashfunction이라 함
+※hashfunction의 종류 : perfect hashfunction / c-universal hashfunction / division hashfunction
+		      multiplication,shift folding, boundary folding, mid-square,Extraction.....
+		      (해당 해시함수에 대한 자세한 내용은 책을 통해 학습함)
+hashfunction에 따라 key값을 서랍에 넣을려고하는데 서랍을 열어보니 안에 이미 key값이 존재할때
+이 경우 충돌(collision)이 발생했다고함
+충돌이 발생한 경우, 이 충돌을 조정해서 서랍에 넣는 방법을 충돌해결방법이라함
+충돌해결방법은 두가지 방법이 있음 → openaddressing, chaining
+
+1. openadrressing(Hashopenadrr)
+	
+	linear probing → 충돌시 다음칸으로 이동하는 방식
+	openadrresing에 대한 자세한 내용은 아래와 같으며, 코드 분석을 통해 open addressing방식을 학습함
+class HashOpenAddr:
+    def __init__(self, size=10):
+        self.size = size
+        self.keys = [None]*self.size
+        self.values = [None]*self.size
+    def __str__(self):
+        s = ""
+        for k in self:
+            if k == None:
+                t = "{0:5s}|".format("")
+            else:
+                t = "{0:-5d}|".format(k)
+            s = s + t
+        return s
+    def __iter__(self):
+        for i in range(self.size):
+            yield self.keys[i]
+    def find_slot(self,key):
+            i = f(key)
+            start = i
+            while ( H[i] != None ) and ( H[i].key != key ):
+                    i = (i + 1) % size #slot번호가 넘어갈때 숫자변환
+                    if(i == start):#해쉬테이블이 꽉차있다.
+                            return FULL#해쉬테이블이 꽉차있지만 찾는값은 없다
+            return i #빈칸을 찾거나 진짜로 key의 slot번호를 찾는경우
+                    #결과 → 1.꽉차있는데 없는경우 2.없고 빈칸만 있는경우 3.진짜로 찾은경우
+    def set(self,key,value): 
+            i = find_slot(self,key)
+            if i == FULL:#꽉차있고 비어있는경우
+                    return FULL
+            if H[i] != None:  # 이미 key 값을 갖는 item이 H에 존재함 (수정)
+                    H[i].value = self.value  # value 값 update 후 리턴
+                    return key
+            else:
+                    H[i].key = key 
+                    H[i].value = value
+            return key
+    def remove(self,key):
+        i = self.find_slot(key)
+	if H[i] ==None:
+            return None
+	j = i
+	while True:
+                H[i]=None#비우기
+		while True:
+			j = (j+1) % size
+			if H[j] ==None  // 자리 이동 완료!
+				return None
+			k = f(H[j].key)
+			# |    i..k..j |
+			# |....j..i..k..| or |..k..j..i..|
+			if not ( i < k <= j or j < i < k or k <= j < i): # H[j] --> H[i]
+				break
+		H[i] = H[j]
+		i = j
+    def search(self,key):
+	i = find_slot(self.key) 
+	if H[i] != None: # key is in table 
+		return H[i].value
+	else: 								 # key is not in table 
+		return None		 # not found
+    def __getitem__(self,key):
+            return self.search(self.key)
+    def __setitem__(self,key,value):
+            self.set(self.key,self.value)
+
+	quadratic probing : f(key) → f(key)+1^2 → f(key)+2^2 →........ 의 방식
+	double hashing : 두개의 해시함수필요
+			f(key)+g(key) → f(key)+2g(key) → f(key)+3g(key) →......
+
+2. chaining
+	해시테이블 슬롯에 연결리스트를 부착하여 무한개의 key값을 저장하는 방식
+	chaining에 대한 자세한 내용은 아래와 같고 코드 분석을 통해 학습함
+class HashChain:
+	def __init__(self, size):
+		self.size = size# 슬롯의 갯수
+		self.H = []
+		for i in range(size):
+                        self.H.append(singlyLinkedList())
+                #self.H=[singlyLinkedList() for_in range(size)]
+		
+	def hash_function(self, key):
+		return f(key)	# return hash value for key
+	
+	def find_slot(self, key):
+		# chaining이므로 빈 슬롯을 찾을 필요없이 해시함수값을 리턴
+		return self.hash_function(key)
+
+	def set(self, key):
+		i = self.find_slot(key)
+		v = self.H[i].search(key)
+		if v == None: # key 값을 갖는 노드가 없다면 삽입연산
+			self.H[i].pushFront(key, value) # (key, value) 노드를 head 노드 위치에 삽입!
+		else: # 기존의 key값을 갖는 노드가 있으므로 value값 수정
+			v.value = value
+	
+	def remove(self, key):
+		i = self.find_slot(key)
+		v = self.H[i].search(key)
+		if v == None:
+                       		return None
+		else:
+			self.H[i].remove(v)	
+
+cf. 테이블 크기 조정
+크기가 부족할때마다 일일히 조정해주는 작업은 너무 많은 연산시간이 필요
+따라서 해시테이블 크기의 절반이 차있는경우, 2배로 해시테이블을 늘리는 방식으로 테이블 크기로 조정
+이때의 평균비용은 (2^k)-1/(2^k-1) < 2 → O(1) / 연산의 평균시간을 분석하는것, 평균시간→ amortized analysis/amortized time
+해시테이블의 성능을 평가하는 방법?
+1. load factor : n(key값의 개수) / m(해시테이블 크기)
+		load factor가 커질수록 충돌횟수돟 비례하여 증가하게 됨
+
+2. collision ratio : (충돌횟수) / n(key값의 개수)
+
+3. search 성능
+	unsuccessful search → key값이 테이블에 없는 경우, successful search보다 시간이 많이 걸림
+	해당내용은 책을 참고바람
+
+※그래프
+
+두 노드 사이의 관계가 있는 경우, 엣지로 연결하여 표현하는 자료구조
+용어정리 
+노드 : V혹은 Vertex로 표현되며, spot을 의미
+엣지 : 노드사이의 관계가 있을시, 노드와 노드를 연결하게 되는데 그때 연결하는 선을 엣지라함
+분지수 : 노드에 연결된 엣지의 개수를 개수
+out-degree : 노드에서 나가는 엣지
+in-degree : 노드에 들어노는 엣지 
+degree : 방향성이 없는 엣지
+weight : 노드마다 가중치를 할당, 가중치를 통해 엣지의 비용을 계산하기도 함
+경로(path) : 특정노드에서 특정노드로 가는 경우의 수 (한번 방문시 재방문 불가)
+
+그래프 표현방법
+
+1. 인접행렬
+	2차원 리스트를 통해 표현
+2. 인접리스트
+	각 정점에 입전합 엣지만을 연결리스트로 표현 
+자세한 내용은 책을 참고바람( 책을 통해 학습함)
+
+	
+	
+그래프 탐색 →DFS(깊이우선탐색), BFS(너비우선탐색)
+
+1.DFS
+	깊이우선 탐색의 경우 특정노드에 연결된 가장깊은곳까지 먼저 탐색후 다음노드로 넘어감
+ 	수도코드는 아래와 같음			
+DFS(v): # 재귀함수 버전
+	mark v as visited node  # visited[v] = True
+	pre[v] = curr_time  # recod the first visiting time
+	curr_time += 1
+	for each edge (v, w):
+		if w is unmarked:
+			parent[w] = v
+			DFS(w)
+	post[v] = curr_time
+	curr_time += 1
+
+2. BFS 
+	너비우선탐색의 경우, 깊이우선이 아닌 특정노드에서 같은 Level에 있는 모든 노드를 탐색후
+	더 깊숙한 level을 탐색하게됨
+	자세한 코드는 아래와 같음
+BFS(G = (V, E))
+	# node 0 is the starting vertex!
+	# n = |V|
+	visited = [False] * n
+	parent = [-1] * n
+	dist = [0] * n
+	Q = Queue()
+	for all source node s in G:
+		Q.enqueue(s)
+		while Q is not empty:
+			v = Q.dequeue() // dequeue means visit
+			visited[v] = True
+			for each edge v -> w:
+				if no visited[w]:
+					Q.enequeue(w)
+					parent[w] = v
+					dist[w] = dist[v] + 1
+
+
+최단경로 문제
+
+그래프에서 source(출발노드)에서 특정노드까지 가는 최단경로를 dist[v]로 표현함 즉 dist[v]란 source노드에서 v노드까지는 가능 최단경로를 의미함
+최단경로를 나타내는 알고리즘은 2가지가 있다. 첫째는 bellman ford 알고리즘과 dijkstra 알고리즘이 있음
+
+1. bellman ford
+	splay : 기존경로에서 더 가까운 노드가 존재한다고 하면, 새롭게 발견된 노드로 dist[v]값을 변경시켜주는 것
+	source노드로 부터 특정노드로의 경로상 노드가 n개가 존재한다고하면, source노드와 dest노드를 제외한 노드의 개수는 (n-2)개가 존재
+	n-2개를 거쳐 dist노드에 연결된 노드까지 최단경로를 탐색하고 dist노드로 연결된 노드를 splay하여 최단경로를 계산하기떄문에
+	O((n-1)*E=O(n^3)(최악의 경우)시간이 걸림
+	자세한 코드는 아래와 같음
+
+# Bellman-Ford Algorithm
+# Graph G = (V, E) with edges of (possibly negative) costs
+def Bellamn-Ford(G = (V, E)):
+	# n = number of nodes, m = number of edges
+	d = [inf, ..., inf], d[s] = 0
+	for i in range(1, n):  # total (n-1) rounds
+		for each edge e = (u, v):
+			relax(u, v)
+	
+	return d
+
+2. dijkstra 알고리즘
+	bellman-ford의 경우,중복으로 최단경로를 계산하여 수행시간 많이 걸리므로 그런문제를 해결하기위해 노드별로 최단경로를 확실히 구하여 dist[v]값을 정하게됨
+	이렇게 설계하면 중복을 피하여 dist[v]의 경로를 계산할수있으므로 최단경로를 빠른시간안에 탐색할수있음
+def Dijkstra(G):
+    n, m = numbers of nodes and edges of G
+		s = source node, simply 0
+    d = [0, inf, ..., inf]
+    parent = [0, NULL, ..., NULL]
+    H = make_heap(nodes v of G with key d[v])
+    while len(H): # n iterations
+        u = H.deleteMin()
+        for each v adjacent to u: # m edges are scanned in total
+            if (u, v) is an edge of G:
+                if d[u] + cost(u, v) < d[v]:
+                    d[v] = d[u] + cost(u, v)
+                    parent[v] = u
+                    H.decreaseKey(v, d[v])
+    return dist, parent
