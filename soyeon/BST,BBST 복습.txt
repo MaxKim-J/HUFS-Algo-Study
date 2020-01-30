@@ -1,0 +1,182 @@
+1. 이진 탐색 트리(BST: Binary Search Tree)
+ - 아래 조건을 만족하는 이진트리
+  1) None은 빈 BST이다.
+  2) BST의 노드 v의 key값: v의 왼쪽 자손 노드들의 key값 <= v.key < 오른쪽 자손 노드들의 key값
+ 
+ - 지원 연산: 순회(preorder, inorder, postorder),탐색(search, find_loc), 삽입(insert), 삭제(deleteByMerging, deleteByCopying), succ, pred
+ - ***삭제연산***
+   a. deleteByMerging
+     제거 방식: 지우려는 노드가 x라고 하면, x의 왼쪽 부트리를 x 위치에 놓고 왼쪽 부트리 중 가장 key값이 큰 노드(m-왼쪽 부트리의 가장 오른쪽 노드)의 오른쪽 자식으로 x의 오른쪽 부트리를 붙인다.
+     두 가지 경우로 나눔: 삭제할 노드 x가 root인 경우와 아닌 경우
+   b. deleteByCopying
+     제거 방식: 지우려는 노드 x의 왼쪽 부트리 L, 오른쪽 부트리 R을 아래와 같이 조정
+       step1. L에서 가장 큰 값을 갖는 노드 y를 찾음
+       step2. y의 key값을 x의 key값으로 copy
+       step3. y의 왼쪽 부트리가 존재한다면, y의 위치로 올림
+
+2. 균형 이진 탐색 트리(BBST: Balanced Binary Search Tree)
+ - 이진탐색트리의 연산 시간은 트리 높이 h에 의해 결정되는데 최악의 경우 h = O(n)이 되어 탐색, 삽입, 삭제 연산이 매우 느림
+ - 연산 속도를 빠르게 하기 위해 트리 높이를 작게 유지할 필요 있음
+ - 삽입, 삭제 연산을 반복해도 n개의 노드를 갖는 이진트리의 높이를 항상 O(log n)이 되도록 유지하는 BST를 균형이진탐색트리라고 함
+ - 삽입, 삭제를 반복해도 h = O(log n)을 만족하도록 하기 위해 rotation이라는 기본 연산 존재(left rotation, right rotation)
+ - 대표적인 BBST: AVL 트리, Red-Black 트리, Splay 트리
+
+ 1) AVL 트리
+   정의: 모든 노드에 대해, 노드의 왼쪽 부트리와 오른쪽 부트리의 높이 차가 1 이하인 BST
+   insert: 2번 이하의 rotation으로 rebalancing 가능
+   delete: O(log n)번의 rotation으로 rebalancing 가능
+ 2) Red-Black 트리
+   정의
+       1. 각 노드는 red 또는 black의 색을 가짐
+       2. 루트노드는 black임
+       3. 리프노드인 NIL노드의 색은 black으로 정의
+       4. 어떤 노드가 red라면, 두 자식노드는 모두 black임
+       5. 어떤 노드에서 서브트리의 리프 NIL노드까지의 모든 경로에 포함된 black노드의 개수는 같음(이를 black-height라고 부름)
+ 3) Splay 트리
+    - AVL, red-black 트리는 삽입, 삭제 연산을 수행하면 트리의 균형 조건이 깨지게 되고 회전 등의 방법을 통해 강제로 균형을 맞추는 방식
+    - Splay 트리는 강제로 균형을 맞추지 않고 한번 탐색되는 key값이 앞으로도 탐색될 가능성이 높다는 성질을 활용하여 자주 탐색되는 key값을 
+      가능하면 루트노드 혹은 루트노드와 가까운 곳에 위치시키는 전략을 사용 -> 평균적인(!!항상이 아님) 연산 수행 시간을 O(log n)으로 유지(최악의 경우엔 매우 느릴 수 있음)
+    - Splaying 연산 정의: 어떤 노드 a를 splaying한다는 것은 zig or zag연산을 반복 적용하여 a를 루트노드로 만드는 연산
+       a. zig/zag: a의 부모가 루트인 경우
+       b. zig-zig/zag-zag: a와 a의 부모가 각각 같은 방향 자식인 경우
+       c. zig-zag/zag-zig: a와 a의 부모가 서로 다른 방향 자식인 경우
+
+###코드###
+
+###BST###
+class BST:
+    def __init__(self):
+        self.root = None
+        self.size = 0
+
+    def __len__(self):
+        return self.size
+
+    def preorder(self, v):
+        if v != None:
+            print(v.key, end = ' ')
+            self.preorder(v.left)
+            self.preorder(v.right)
+
+    def inorder(self, v):
+        if v != None:
+            self.inorder(v.left)
+            print(v.key, end = ' ')
+            self.inorder(v.right)
+
+    def postorder(self, v):
+        if v != None:
+            self.postorder(v.left)
+            self.postorder(v.right)
+            print(v.key, end = ' ')
+
+    def find_loc(self, key): #key의 위치가 있는 노드를 반환, 없으면 들어갈 위치의 부모노드를 반환
+        if self.size == 0: return None
+        p = None
+        v = self.root
+        while v:
+            if v.key == key: return v
+            elif v.key < key:
+                p = v
+                v = v.right
+            else:
+                p = v
+                v = v.left
+        return p
+
+    def search(self, key):
+        p = self.find_loc(key)
+        if p and p.key == key:
+            return p
+        else:
+            return None
+
+    def insert(self, key):
+        p = self.find_loc(key)
+        if p == None or p.key != key:
+            v = Node(key)
+            if p == None: # 트리의 size == 0인 경우
+                self.root = v
+            else:
+                v.parent = p
+                if p.key > key:
+                    p.left = v
+                else:
+                    p.right = v
+            self.size += 1
+            return v
+        else:
+            print('key is already in the tree!')
+            return None
+
+    def deleteByMerging(self, x):
+        a, b, pt = x.left, x.right, x.parent
+        if a == None:
+            c = b
+        else:
+            c = m = a
+            while m.right: m = m.right
+            m.right = b
+            if b:
+                b.parent = m
+        if self.root == x:
+            if c: c.parent = None
+            self.root = c
+
+        else:
+            if pt.left == x: pt.left = c
+            else: pt.right = c
+            if c: c.parent = pt
+        self.size -= 1
+
+    def height(self, x):
+        if x == None: return -1
+        else:
+            l = self.height(x.left)
+            r = self.height(x.right)
+            x.height = max(l,r)+1
+            return x.height
+        
+    def number(self, x):
+        if x == None: return 0
+        else:
+            l = self.number(x.left)
+            r = self.number(x.right)
+            x.number = 1 + l + r
+            return x.number
+
+    def rotateLeft(self, x):
+        if not x: return
+        z = x.right
+        if z == None: return
+        b = z.left
+        z.parent = x.parent
+        if x.parent:
+            if x.parent.left == x:
+                x.parent.left = z
+            else:
+                x.parent.right = z
+        z.left = x
+        x.parent = z
+        x.right = b
+        if b: b.parent = x
+        if x == self.root:
+            self.root = z
+
+    def rotateRight(self, x):
+        if not x: return
+        z = x.left
+        if z == None: return
+        b = z.right
+        z.parent = x.parent
+        if x.parent:
+            if x.parent.left == x:
+                x.parent.left = z
+            else:
+                x.parent.right = z
+        z.right = x
+        x.parent = z
+        x.left = b
+        if b: b.parent = x
+        if x == self.root:
+            self.root = z
